@@ -413,33 +413,44 @@
                    ((par ((mcdnat (primero (absoluto r))) (primero (absoluto s)))) zero))))
 
 ;;; Base canónica Zp n <- Entero, p <- Base
+(define nmodp (lambda (n)
+                    (lambda (p)
+                        ((restoent n) p))))
+
 (define basemod (lambda (n)
                     (lambda (p)
                         ((par n) p))))
 
 (define redumod (lambda (n)
-                  ((restoent (primero n)) (segundo n))))
+                  ((nmodp (primero n)) (segundo n))))
 
 (define testmod (lambda (n)
-                (testenteros (redumod n))))
+                (testenteros (primero n))))
 
 ;; Tanto en sumamod como en prodmod habría que comrpobar si la base es igual
 (define sumamod (lambda (n)
                     (lambda (m)
-                    ((basemod ((sument (primero n)) (primero m)))(segundo n)))))
+                        ((basemod ((nmodp ((sument (primero n)) (primero m))) (segundo n))) (segundo n))
+                    )))
 
 (define prodmod (lambda (n)
                     (lambda (m)
-                    ((basemod ((prodent (primero n)) (primero m)))(segundo n)))))
+                        ((basemod ((nmodp ((prodent (primero n)) (primero m))) (segundo n))) (segundo n))
+                    )))
 
-; INVERSO
+; INVERSO (Devuelve el inverso en la base canónica de Zp)
 (define inverso (lambda (n)
-                (((basemod (((positivo (primero n))
-                ((restaent (redumod n)) (segundo n)))
-                (redumod n))) (segundo n)))))
+                        ((basemod
+                        ((positivo (primero n))
+                            ((restaent (redumod n)) (segundo n))
+                            (redumod n)
+                        )) (segundo n))))
 
+; (testmod ((sumamod ((basemod dos) cinco)) ((basemod tres) cinco)))
+(testmod ((prodmod ((basemod dos) cinco)) ((basemod tres) cinco)))
+; (testmod (inverso ((basemod -dos) cinco)))
+; (testmod (inverso ((basemod tres) cinco)))
 
-(testmod ((basemod tres) cinco))
 ;(define sumamod (lambda (n)
 ;                    (lambda (m)
 ;                        (lambda (p)
