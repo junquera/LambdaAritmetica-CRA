@@ -491,6 +491,7 @@
                ((par ((par a) b)) ((par c) d)))))))
 
 (define identidad ((((matriz uno) cero) cero) uno))
+(define matriz_unos ((((matriz uno) uno) uno) uno))
 (define matriz_nula ((((matriz cero) cero) cero) cero))
 (define matriz_prueba1 ((((matriz dos) cuatro) -uno) cinco))
 (define matriz_prueba2 ((((matriz uno) dos) dos) tres))
@@ -537,7 +538,7 @@
         ((prodmod (segundo (primero m))) (primero (segundo m))))
     ))
 
-;; Hay que buscar una forma menos cutre de meter el determinante en todos los elementos
+;; Hay que buscar una forma menos "cutre" de meter el determinante en todos los elementos
 (define inversaaux (lambda (m)
             ((((matriz
                 ((divmod  (segundo (segundo m))) (detmatrizmod m)))
@@ -547,8 +548,36 @@
     ))
 
 (define inversa (lambda (m)
-        ((esceroent (primero (detmatrizmod m))) m (inversaaux m))
+        ((esceroent (primero (detmatrizmod m)))
+            m
+            (inversaaux m))
     ))
 
-(testmatrizmod (inversa ((matrizentmod identidad) cinco)))
-;((lambda (m) (testmod m))(detmatrizmod ((matrizentmod matriz_prueba2) cinco)))
+;; Aquí podríamos haber utilizado Y, pero no sé recorrer la matriz...
+(define rangoaux (lambda (m)
+        ((esceroent (primero (primero (primero m))))
+            ((esceroent (primero (segundo (primero m))))
+                ((esceroent (primero (primero (segundo m))))
+                    ((esceroent (primero (segundo (segundo m))))
+                        cero
+                        uno
+                    )
+                    uno
+                )
+                uno
+            )
+            uno
+        )
+    ))
+
+(define rango (lambda (m)
+        ((esceroent (primero (detmatrizmod m)))
+            (rangoaux m)
+            dos
+        )
+    ))
+
+(testenteros (rango ((matrizentmod matriz_unos) dos)))
+;(testmod (detmatrizmod ((matrizentmod identidad) cinco)))
+;(testmatrizmod (inversa ((matrizentmod identidad) cinco)))
+;(testmatrizmod ((summatrizmod ((matrizentmod identidad) cinco)) ((matrizentmod identidad) cinco)))
