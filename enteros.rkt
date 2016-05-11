@@ -432,14 +432,24 @@
                 (testenteros (primero n))))
 
 ;; Tanto en sumamod como en prodmod habría que comrpobar si la base es igual
+;; pero no sé cómo devolver error. Tomo como base la base del primer miembro
 (define sumamod (lambda (n)
                     (lambda (m)
                         ((basemod ((nmodp ((sument (primero n)) (primero m))) (segundo n))) (segundo n))
+                    )))
+(define restamod (lambda (n)
+                    (lambda (m)
+                        ((basemod ((nmodp ((restaent (primero n)) (primero m))) (segundo n))) (segundo n))
                     )))
 
 (define prodmod (lambda (n)
                     (lambda (m)
                         ((basemod ((nmodp ((prodent (primero n)) (primero m))) (segundo n))) (segundo n))
+                    )))
+
+(define divmod (lambda (n)
+                    (lambda (m)
+                        ((basemod ((nmodp ((cocienteent (primero n)) (primero m))) (segundo n))) (segundo n))
                     )))
 
 ; INVERSO (Devuelve el inverso en la base canónica de Zp)
@@ -450,21 +460,15 @@
                             (redumod n)
                         )) (segundo n))))
 
+(define negativomod (lambda (n)
+        ((enteromodp ((restaent cero) (primero n))) (segundo n))
+    ))
+
 ; (testmod ((sumamod ((basemod dos) cinco)) ((basemod tres) cinco)))
+; (testmod ((restamod ((basemod dos) cinco)) ((basemod tres) cinco)))
 ; (testmod ((prodmod ((basemod dos) cinco)) ((basemod tres) cinco)))
 ; (testmod (inverso ((basemod -dos) cinco)))
 ; (testmod (inverso ((basemod tres) cinco)))
-
-;(define sumamod (lambda (n)
-;                    (lambda (m)
-;                        (lambda (p)
-;                        ((base ((sument n) m)) p)))))
-;
-;(define prodmod (lambda (n)
-;                    (lambda (m)
-;                        (lambda (p)
-;                        ((base ((prodent n) m)) p)))))
-
 
 ;Definición de  matrices
 (define testmatrices (lambda (m)
@@ -474,6 +478,12 @@
     )
 )
 
+(define testmatrizmod (lambda (m)
+      (list (list (testmod (primero (primero m))) (testmod (segundo (primero m))))
+            (list (testmod (primero (segundo m))) (testmod (segundo (segundo m))))
+       )
+    )
+)
 (define matriz (lambda (a)
        (lambda (b)
            (lambda (c)
@@ -488,19 +498,57 @@
 (define matriz_prueba4 ((((matriz uno) -tres) cero) cuatro))
 
 (define matrizmod (lambda (a)
-                    (lambda (b)
-                        (lambda (c)
-                            (lambda (d)
-                                (lambda (p)
-                                ((par ((par ((enteromodp a) p))((enteromodp b) p))) ((par ((enteromodp c) p))((enteromodp d) p)))))))))
+        (lambda (b)
+            (lambda (c)
+                (lambda (d)
+                    (lambda (p)
+                    ((par ((par ((enteromodp a) p)) ((enteromodp b) p)))
+                    ((par ((enteromodp c) p)) ((enteromodp d) p)))))))))
 
 (define matrizentmod (lambda (m)
-                        (lambda (p)
-                            ((((((matrizmod  (primero (primero m)))  (segundo (primero m)))  (primero (segundo m))) (segundo (segundo m))) p)))))
+        (lambda (p)
+            (((((matrizmod  (primero (primero m))) (segundo (primero m)))
+                            (primero (segundo m))) (segundo (segundo m))) p))))
 
 (define summatrizmod (lambda (m)
-                        (lambda (n)
-                            ((((matriz
-                                ((sumamod  (primero (primero m))) (primero (primero n))))
-                                ((sumamod  (segundo (primero m))) (segundo (primero n))))  ((sumamod  (primero (segundo m))) (primero (segundo n))))  ((sumamod  (segundo (segundo m))) (segundo (segundo n))))
-                        )))
+        (lambda (n)
+            ((((matriz
+                ((sumamod  (primero (primero m))) (primero (primero n))))
+                ((sumamod  (segundo (primero m))) (segundo (primero n))))
+                ((sumamod  (primero (segundo m))) (primero (segundo n))))
+                ((sumamod  (segundo (segundo m))) (segundo (segundo n))))
+        )))
+
+(define prodmatrizmod (lambda (m)
+        (lambda (n)
+        ((((matriz
+            ((sumamod   ((prodmod (primero (primero m)))  (primero (primero n))))
+                        ((prodmod (segundo (primero m)))  (primero (segundo n)))))
+            ((sumamod   ((prodmod (primero (primero m)))  (segundo (primero n))))
+                        ((prodmod (segundo (primero m)))  (segundo (segundo n)))))
+            ((sumamod   ((prodmod (primero (segundo m)))  (primero (primero n))))
+                        ((prodmod (segundo (segundo m)))  (segundo (primero n)))))
+            ((sumamod   ((prodmod (primero (segundo m)))  (segundo (primero n))))
+                        ((prodmod (segundo (segundo m)))  (segundo (segundo n)))))
+        )))
+
+(define detmatrizmod (lambda (m)
+        ((restamod ((prodmod (primero (primero m))) (segundo (segundo m))))
+        ((prodmod (segundo (primero m))) (primero (segundo m))))
+    ))
+
+;; Hay que buscar una forma menos cutre de meter el determinante en todos los elementos
+(define inversaaux (lambda (m)
+            ((((matriz
+                ((divmod  (segundo (segundo m))) (detmatrizmod m)))
+                ((divmod  (negativomod (segundo (primero m)))) (detmatrizmod m)))
+                ((divmod  (negativomod (primero (segundo m)))) (detmatrizmod m)))
+                ((divmod  (primero (primero m))) (detmatrizmod m)))
+    ))
+
+(define inversa (lambda (m)
+        ((esceroent (primero (detmatrizmod m))) m (inversaaux m))
+    ))
+
+(testmatrizmod (inversa ((matrizentmod identidad) cinco)))
+;((lambda (m) (testmod m))(detmatrizmod ((matrizentmod matriz_prueba2) cinco)))
