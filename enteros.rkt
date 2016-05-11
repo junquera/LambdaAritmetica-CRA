@@ -417,6 +417,10 @@
                     (lambda (p)
                         ((restoent n) p))))
 
+(define enteromodp (lambda (n)
+                    (lambda (p)
+                        ((basemod ((nmodp n) p)) p))))
+
 (define basemod (lambda (n)
                     (lambda (p)
                         ((par n) p))))
@@ -447,7 +451,7 @@
                         )) (segundo n))))
 
 ; (testmod ((sumamod ((basemod dos) cinco)) ((basemod tres) cinco)))
-(testmod ((prodmod ((basemod dos) cinco)) ((basemod tres) cinco)))
+; (testmod ((prodmod ((basemod dos) cinco)) ((basemod tres) cinco)))
 ; (testmod (inverso ((basemod -dos) cinco)))
 ; (testmod (inverso ((basemod tres) cinco)))
 
@@ -482,3 +486,21 @@
 (define matriz_prueba2 ((((matriz uno) dos) dos) tres))
 (define matriz_prueba3 ((((matriz dos) uno) -tres) dos))
 (define matriz_prueba4 ((((matriz uno) -tres) cero) cuatro))
+
+(define matrizmod (lambda (a)
+                    (lambda (b)
+                        (lambda (c)
+                            (lambda (d)
+                                (lambda (p)
+                                ((par ((par ((enteromodp a) p))((enteromodp b) p))) ((par ((enteromodp c) p))((enteromodp d) p)))))))))
+
+(define matrizentmod (lambda (m)
+                        (lambda (p)
+                            ((((((matrizmod  (primero (primero m)))  (segundo (primero m)))  (primero (segundo m))) (segundo (segundo m))) p)))))
+
+(define summatrizmod (lambda (m)
+                        (lambda (n)
+                            ((((matriz
+                                ((sumamod  (primero (primero m))) (primero (primero n))))
+                                ((sumamod  (segundo (primero m))) (segundo (primero n))))  ((sumamod  (primero (segundo m))) (primero (segundo n))))  ((sumamod  (segundo (segundo m))) (segundo (segundo n))))
+                        )))
