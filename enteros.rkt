@@ -497,6 +497,7 @@
 (define matriz_prueba2 ((((matriz uno) dos) dos) tres))
 (define matriz_prueba3 ((((matriz dos) uno) -tres) dos))
 (define matriz_prueba4 ((((matriz uno) -tres) cero) cuatro))
+(define matriz_prueba5 ((((matriz uno) dos) tres) cuatro))
 
 (define matrizmod (lambda (a)
         (lambda (b)
@@ -577,7 +578,40 @@
         )
     ))
 
-(testenteros (rango ((matrizentmod matriz_unos) dos)))
-;(testmod (detmatrizmod ((matrizentmod identidad) cinco)))
-;(testmatrizmod (inversa ((matrizentmod identidad) cinco)))
-;(testmatrizmod ((summatrizmod ((matrizentmod identidad) cinco)) ((matrizentmod identidad) cinco)))
+(define matmodcuadrado (lambda (m)
+    ((prodmatrizmod m) m)
+))
+
+;; matriz m elevada a n
+(define expmatmod (lambda (m)
+    (lambda (n)
+        ((esceroent n)
+            identidad
+            ((esceroent ((restaent n) uno))
+                m
+                ((esceroent (primero ((enteromodp n) dos)))
+                    ((ncuadradosmatmod m) ((cocienteent n) dos))
+                    ((prodmatrizmod m) ((ncuadradosmatmod m) ((cocienteent ((restaent n) uno)) dos)))
+                )
+            )
+        )
+    )
+))
+
+(define ncuadradosmatmod
+    (lambda (m)
+        (lambda (n)
+            ((esceroent n)
+                m
+                ((ncuadradosmatmod (matmodcuadrado m)) ((restaent n) uno))
+            )
+        )
+    )
+)
+
+(testmatrizmod ((expmatmod ((matrizentmod matriz_prueba5) cuatro)) uno))
+; (testmatrizmod (matmodcuadrado ((matrizentmod matriz_prueba5) cuatro)))
+; (testenteros (rango ((matrizentmod matriz_unos) dos)))
+; (testmod (detmatrizmod ((matrizentmod identidad) cinco)))
+; (testmatrizmod (inversa ((matrizentmod identidad) cinco)))
+; (testmatrizmod ((summatrizmod ((matrizentmod identidad) cinco)) ((matrizentmod identidad) cinco)))
