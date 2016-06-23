@@ -462,16 +462,6 @@
 
 ;; (c) Decisión sobre la inversibilidad y cálculo del inverso en el caso de que exista.
 
-; INVERSO (Devuelve el inverso en la base canónica de Zp) (-1 en caso de error)
-;(define inverso_soft (lambda (n)
-;    ((lambda (mcd) (((esigualent mcd) uno)
-;        ((inversoaux n) uno)
-;        (((esigualent (primero n)) uno)
-;            n
-;            ((enteromodp cero) (segundo n))
-;        )
-;    )) ((mcdent (primero n)) (segundo n)))
-;))
 (define inverso (lambda (n)
     ((lambda (mcd) (((esigualent mcd) uno)
         ((inversoaux n) uno)
@@ -521,6 +511,7 @@
 ;(testmod (inverso ((basemod siete) trece)))
 ;(testmod (inverso ((basemod ocho) trece)))
 ;(testmod (inverso ((basemod nueve) trece)))
+;(testmod ((prodmod (inverso ((basemod nueve) trece))) ((basemod nueve) trece)))
 
 
 
@@ -595,6 +586,9 @@
                         ((prodmod (segundo (segundo m)))  (segundo (segundo n)))))
         )))
 
+;(testmatrizmod ((summatrizmod ((matrizentmod identidad) dos))((matrizentmod identidad) dos)))
+;(testmatrizmod ((prodmatrizmod ((matrizentmod identidad) dos))((matrizentmod identidad) dos)))
+
 ;; (b) Determinante
 ; Devolvemos el determinante en base Zp
 (define detmatrizmod (lambda (m)
@@ -602,7 +596,7 @@
         ((prodmod (segundo (primero m))) (primero (segundo m))))
     ))
 
-(testmod (detmatrizmod ((matrizentmod matriz_prueba7) siete)))
+;(testmod (detmatrizmod ((matrizentmod matriz_prueba7) siete)))
 
 ;; (c) Decisión sobre inversibilidad y cálculo de inversa y del rango
 
@@ -635,24 +629,6 @@
 ;(testenteros (rango ((matrizentmod identidad) dos)))
 ;(testenteros (rango ((matrizentmod matriz_prueba6) dos)))
 ;(testenteros (rango ((matrizentmod matriz_nula) dos)))
-;(define inversamatmod_soft
-;    (lambda (m)
-;        ((lambda (a)
-;            ((lambda (b)
-;                ((lambda (c)
-;                    ((lambda (d)
-;                        ((lambda (i)
-;                            ((esceroent (primero i))
-;                                matriz_nula
-;                                ((((matriz ((prodmod d) i)) ((prodmod (inverso c)) i))
-;                                ((prodmod (inverso b)) i)) ((prodmod a) i))
-;                            )
-;                        )(inverso ((restamod ((prodmod a) d))((prodmod b) c))))
-;                    ) (segundo (segundo m)))
-;                ) (primero (segundo m)))
-;            ) (segundo (primero m)))
-;        ) (primero (primero m)))
-;    ))
 
 ; Método extra que comprueba si todos los numeros tienen inverso
 (define inversamatmod
@@ -757,4 +733,9 @@
     )
 ))
 
-(testmatrizmod ((expmatmod ((matrizentmod matriz_prueba5) cuatro)) tres)) ; <-- Test de exponenciación de matrices
+;(testmatrizmod ((expmatmod ((matrizentmod identidad) cuatro)) tres))
+;(testmatrizmod ((expmatmod ((matrizentmod matriz_prueba5) cuatro)) cero))
+;(testmatrizmod ((expmatmod ((matrizentmod matriz_prueba5) cuatro)) uno))
+;(testmatrizmod ((expmatmod ((matrizentmod matriz_prueba5) cuatro)) dos))
+;(testmatrizmod ((expmatmod ((matrizentmod matriz_prueba5) cuatro)) tres))
+;(testmatrizmod ((expmatmod ((matrizentmod matriz_prueba5) cuatro)) cuatro))
